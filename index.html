@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INSANIAN BOT | UT School Support</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#16181a;--mut:#6b7280;--line:#e3e5e8;--y:#ffc20e;--tint:#fff6d1;--side:#16181a;--red:#d64545;--green:#1f9d61;--orange:#e8890c;--soft:#f5f6f8}
+[data-theme=dark]{--bg:#0f1113;--card:#1a1d20;--ink:#f1f2f3;--mut:#9aa1a9;--line:#2a2e33;--tint:#2b2510;--side:#0a0b0c;--soft:#23272b}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font:15px/1.5 "Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+button{font:inherit;font-weight:600;cursor:pointer;border:0;border-radius:10px;padding:.55rem 1rem;background:var(--y);color:#16181a;display:inline-flex;align-items:center;gap:.4rem}
+button:disabled{opacity:.5}.soft{background:var(--soft);color:var(--ink);border:1px solid var(--line)}.danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+input,textarea,select{font:inherit;width:100%;padding:.6rem .8rem;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+textarea{resize:vertical;min-height:80px}
+:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.auth{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.hero{background:var(--side);color:#fff;padding:3rem;display:flex;flex-direction:column;justify-content:flex-end;gap:1rem;position:relative}
+.hero:before{content:"";position:absolute;inset:0 0 auto 0;height:26px;background:repeating-linear-gradient(135deg,var(--y) 0 18px,#16181a 18px 36px)}
+.hero h1{font-size:2.6rem;line-height:1.1;margin:0;max-width:11ch}.hero p{color:#b6bbc1;max-width:34ch;margin:0}
+.formside{display:grid;place-items:center;padding:2rem;background:var(--card)}
+.formside form{width:min(380px,100%);display:grid;gap:.9rem}.formside h2{margin:0}.err{color:var(--red);margin:0;min-height:1.3em}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.side{background:var(--side);color:#e9eaec;display:flex;flex-direction:column;border-top:4px solid var(--y);position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:.7rem;align-items:center;padding:1.2rem 1.2rem 1rem;border-bottom:1px solid #2a2e33}
+.mark{background:var(--y);color:#16181a;font-weight:800;border-radius:10px;width:42px;height:42px;display:grid;place-items:center;font-size:1.1rem}
+.brand b{display:block;font-size:1.05rem;line-height:1.1}.brand small{color:#9aa1a9;font-size:.78rem}
+#menu{padding:1rem;display:grid;gap:.3rem;align-content:start;flex:1}
+#menu button{background:transparent;color:#e9eaec;justify-content:flex-start;padding:.7rem .9rem;width:100%;font-weight:500}
+#menu button.on{background:var(--y);color:#16181a;font-weight:700}
+#menu em{margin-left:auto;background:var(--red);color:#fff;font-style:normal;font-size:.75rem;padding:0 .5rem;border-radius:99px}
+.me{padding:1rem 1.2rem;border-top:1px solid #2a2e33}.me b{display:block;font-size:.9rem;overflow:hidden;text-overflow:ellipsis}.me small{color:#9aa1a9;display:block;margin-bottom:.5rem}
+.me button{background:transparent;color:#e9eaec;padding:.3rem 0}
+.mainc{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:.7rem;padding:.8rem 1.4rem;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.top>div{flex:1;min-width:140px}.top b{display:block;line-height:1.2}.top small{color:var(--mut)}
+.ico{padding:.5rem;background:var(--soft);color:var(--ink);border:1px solid var(--line)}#tg{display:none}
+.chip{border-radius:99px;padding:.2rem .8rem;font-size:.8rem;background:#e2f5ec;color:var(--green)}.chip.bad{background:#fde4e4;color:var(--red)}
+#hum{background:var(--red);color:#fff}
+#view{padding:1.4rem;flex:1;min-width:0}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-bottom:1rem}.head h1{margin:0;font-size:1.6rem}.mut{color:var(--mut);margin:.1rem 0 0}.head select{width:auto}
+.banner{background:var(--tint);border:1px solid var(--y);border-radius:12px;padding:.8rem 1rem;margin-bottom:1.1rem}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;margin-bottom:1rem}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;display:grid;grid-template-columns:1fr auto;gap:.2rem;text-align:left;color:var(--ink);font-weight:500}
+.kpi .ik{grid-row:span 2;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--tint);color:#9a6f00}
+.kpi b{font-size:1.9rem;line-height:1.2}.kpi span{color:var(--mut);font-size:.85rem}
+.kpi.red .ik{background:#fde4e4;color:var(--red)}.kpi.grn .ik{background:#e2f5ec;color:var(--green)}.kpi.org .ik{background:#fdeeda;color:var(--orange)}
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;min-width:0}.card h3{margin:0 0 .8rem}
+.bars{display:flex;align-items:flex-end;gap:3px;height:200px;border-bottom:1px solid var(--line)}.bars i{flex:1;background:var(--y);border-radius:4px 4px 0 0;min-height:2px}
+.axis{display:flex;justify-content:space-between;color:var(--mut);font-size:.8rem;margin-top:.3rem}
+.donut{width:150px;height:150px;border-radius:50%;margin:.3rem auto 1rem;display:grid;place-items:center}.donut div{width:90px;height:90px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-weight:800;font-size:1.3rem}
+.lg{display:grid;gap:.3rem;font-size:.88rem}.lg span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:.5rem}
+.item{display:flex;gap:.8rem;align-items:center;padding:.65rem 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.item div{flex:1;min-width:0}.item small{color:var(--mut);display:block}
+.q{padding:.6rem .8rem;border-left:4px solid var(--orange);background:var(--soft);border-radius:0 8px 8px 0;margin-bottom:.5rem}.q small{color:var(--mut);display:block}
+.empty{color:var(--mut);padding:1rem}
+.chatwrap{display:grid;grid-template-columns:330px 1fr;height:calc(100vh - 140px);background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#list{overflow:auto;border-right:1px solid var(--line)}
+.row{display:grid;grid-template-columns:1fr auto;width:100%;text-align:left;background:transparent;color:var(--ink);border-radius:0;border-bottom:1px solid var(--line);padding:.8rem 1rem;font-weight:400;gap:0 .5rem}
+.row.sel{background:var(--tint)}.row .nm{font-weight:700}.row .sub,.row .tm{font-size:.82rem;color:var(--mut)}.row .tm{text-align:right}
+.tag{background:var(--red);color:#fff;font-size:.72rem;padding:.05rem .5rem;border-radius:99px;justify-self:end;align-self:center}
+#pane{display:flex;flex-direction:column;min-width:0}
+.ph{display:flex;align-items:center;gap:1rem;padding:.8rem 1rem;border-bottom:1px solid var(--line)}.ph div{flex:1}.ph small{display:block;color:var(--mut)}.ph .back{display:none}.okc{color:var(--green);font-weight:700}
+.grn{background:var(--green);color:#fff}
+#msgs{flex:1;overflow:auto;padding:1rem;display:flex;flex-direction:column;gap:.55rem;background:var(--bg)}
+.b{max-width:min(560px,85%);padding:.55rem .85rem;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--card);border:1px solid var(--line)}
+.b small{display:block;font-size:.72rem;opacity:.65}.b.bot{align-self:flex-end;background:var(--tint);border-color:var(--y)}.b.staff{align-self:flex-end;background:#16181a;color:#fff;border-color:#16181a}
+.cmp{display:flex;gap:.6rem;padding:.8rem 1rem 0;border-top:1px solid var(--line)}.cmp textarea{min-height:60px}.hint{margin:0;padding:.4rem 1rem .8rem;font-size:.82rem;color:var(--mut)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:.7rem .8rem;border-bottom:1px solid var(--line);font-size:.9rem}th{color:var(--mut);font-weight:600}tbody tr{cursor:pointer}tbody tr:hover{background:var(--soft)}
+.tw{overflow:auto}
+.kb{display:grid;gap:.6rem;margin-bottom:1rem}.kb textarea{min-height:170px}.act{display:flex;gap:.8rem;align-items:center}.act label{flex:1;display:flex;gap:.4rem;align-items:center}.act input{width:auto}
+.frm{display:grid;grid-template-columns:1fr 1fr auto;gap:.6rem;margin-bottom:1rem}
+#toast{position:fixed;right:1rem;bottom:1rem;background:#16181a;color:#fff;border-left:5px solid var(--y);padding:.8rem 1.1rem;border-radius:10px;z-index:20}
+@media(max-width:900px){.auth{grid-template-columns:1fr}.hero{min-height:200px;padding:2rem}.hero h1{font-size:1.8rem}
+.app{grid-template-columns:1fr}.side{position:fixed;z-index:30;width:260px;transform:translateX(-100%);transition:transform .2s}.side.open{transform:none}#tg{display:inline-flex}
+.g2{grid-template-columns:1fr}.chatwrap{grid-template-columns:1fr}#pane{display:none}.chatwrap.o #list{display:none}.chatwrap.o #pane{display:flex}.ph .back{display:inline-flex}.frm{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<section id="login" class="auth" hidden>
+  <div class="hero"><h1>Layanan pelanggan UT School</h1><p>INSANIAN BOT menjawab pelanggan di Telegram. Tim memantau dan menangani kasus yang perlu manusia di sini.</p></div>
+  <div class="formside"><form id="lf"><h2>Masuk</h2>
+    <label>Email<input id="em" type="email" required autocomplete="username"></label>
+    <label>Kata sandi<input id="pw" type="password" required autocomplete="current-password"></label>
+    <p class="err" id="le"></p><button type="submit" style="justify-content:center">Masuk</button></form></div>
+</section>
+
+<div id="app" class="app" hidden>
+  <aside class="side" id="side">
+    <div class="brand"><div class="mark">UT</div><div><b>UT School</b><small>INSANIAN Support System</small></div></div>
+    <nav id="menu"></nav>
+    <div class="me"><b id="who"></b><small>Administrator</small><button id="out">Keluar</button></div>
+  </aside>
+  <div class="mainc">
+    <header class="top">
+      <button id="tg" class="ico" aria-label="Menu"></button>
+      <div><b id="title"></b><small id="date"></small></div>
+      <span id="conn" class="chip bad">Menghubungkan</span>
+      <button id="hum" class="chip" hidden></button>
+      <button id="rl" class="soft"></button>
+      <button id="th" class="ico" aria-label="Ganti tema"></button>
+    </header>
+    <main id="view"></main>
+  </div>
+</div>
+<div id="toast" hidden></div>
+
+<script>
+// ===== EDIT THESE TWO LINES (Supabase > Project Settings > API) =====
+const SUPABASE_URL = "https://eqbvcsjlnhcopxdvrbsl.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxYnZjc2psbmhjb3B4ZHZyYnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNTg0MTIsImV4cCI6MjEwNjkzNDQxMn0.FgNg-LBCKl_FMpyxGugrloyzPLmPLVARAt-n0zn-Ce4";
+// ====================================================================
+const FN = SUPABASE_URL + "/functions/v1/insanian/api";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = t => new Date(t).toLocaleString("id-ID", {timeZone:"Asia/Jakarta", day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"});
+const ICON = {
+ dash:'<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>',
+ chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+ cust:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+ kb:'<path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 8h8M8 12h6"/>',
+ team:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ rl:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/>', moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>', menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',
+ warn:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+ q:'<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>', pct:'<path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>'};
+const ic = (n,s=20) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
+const P = {dash:"Dashboard", chat:"Percakapan", cust:"Data Customer", kb:"Knowledge Base", team:"Tim"};
+const S = {page:"dash", days:30, cust:[], cur:null, human:null};
+
+async function api(body){
+  const {data:{session}} = await sb.auth.getSession();
+  const r = await fetch(FN, {method:"POST", headers:{"Content-Type":"application/json", Authorization:"Bearer "+session.access_token, apikey:SUPABASE_ANON_KEY}, body:JSON.stringify(body)});
+  const j = await r.json().catch(() => ({}));
+  if(!r.ok) throw new Error(j.error || "Permintaan gagal");
+  return j;
+}
+function toast(t){ const e=$("#toast"); e.textContent=t; e.hidden=false; setTimeout(()=>e.hidden=true, 5000); }
+
+// ---------- boot / auth ----------
+async function boot(){
+  try{ document.documentElement.dataset.theme = localStorage.getItem("th") || "light"; }catch(_){}
+  const {data:{session}} = await sb.auth.getSession();
+  $("#login").hidden = !!session; $("#app").hidden = !session;
+  if(!session) return;
+  $("#who").textContent = session.user.email;
+  $("#tg").innerHTML = ic("menu"); $("#rl").innerHTML = ic("rl",16)+" Reload Data"; $("#th").innerHTML = ic("moon",18);
+  $("#menu").innerHTML = Object.keys(P).map(p => `<button data-p="${p}">${ic(p)}<span>${P[p]}</span>${p==="chat"?'<em id="bdg" hidden></em>':""}</button>`).join("");
+  $("#date").textContent = new Date().toLocaleDateString("id-ID",{dateStyle:"full",timeZone:"Asia/Jakarta"});
+  await loadCust(); go("dash"); live();
+}
+$("#lf").onsubmit = async e => { e.preventDefault();
+  const {error} = await sb.auth.signInWithPassword({email:$("#em").value, password:$("#pw").value});
+  if(error) $("#le").textContent = "Gagal masuk: " + error.message; else boot(); };
+$("#out").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+$("#menu").onclick = e => { const b = e.target.closest("button"); if(b) go(b.dataset.p); };
+$("#tg").onclick = () => $("#side").classList.toggle("open");
+$("#rl").onclick = () => refresh(true);
+$("#hum").onclick = () => { S.cur = S.cust.find(c => c.mode==="human") || null; go("chat"); };
+$("#th").onclick = () => { const d = document.documentElement; d.dataset.theme = d.dataset.theme==="dark" ? "light" : "dark"; try{ localStorage.setItem("th", d.dataset.theme); }catch(_){} };
+
+function go(p){
+  S.page = p; $("#side").classList.remove("open"); $("#title").textContent = P[p];
+  document.querySelectorAll("#menu button").forEach(b => b.classList.toggle("on", b.dataset.p === p));
+  ({dash:pDash, chat:pChat, cust:pCust, kb:pKB, team:pTeam})[p]();
+}
+
+// ---------- data ----------
+async function loadCust(){
+  const prev = S.human;
+  const {data} = await sb.from("customers").select("*").order("last_message_at", {ascending:false});
+  S.cust = data || [];
+  if(S.cur) S.cur = S.cust.find(c => c.id === S.cur.id) || null;
+  S.human = S.cust.filter(c => c.mode==="human").length;
+  const bd = $("#bdg"); if(bd){ bd.hidden = !S.human; bd.textContent = S.human; }
+  $("#hum").hidden = !S.human; $("#hum").textContent = S.human + " perlu human";
+  if(prev !== null && S.human > prev) toast("Pelanggan baru membutuhkan penanganan manusia.");
+}
+async function refresh(manual){
+  await loadCust();
+  if(S.page==="dash") pDash(); else if(S.page==="chat"){ drawList(); if(S.cur) openCustomer(S.cur.id); } else if(S.page==="cust") pCust();
+  if(manual) toast("Data diperbarui.");
+}
+let tm; const bump = () => { clearTimeout(tm); tm = setTimeout(refresh, 500); };
+function live(){ sb.channel("live")
+  .on("postgres_changes", {event:"*", schema:"public", table:"customers"}, bump)
+  .on("postgres_changes", {event:"*", schema:"public", table:"messages"}, bump)
+  .subscribe(s => { const c=$("#conn"); const ok = s==="SUBSCRIBED"; c.textContent = ok ? "Terhubung" : "Terputus"; c.classList.toggle("bad", !ok); }); }
+
+// ---------- dashboard ----------
+const INT = {inquiry:["Pertanyaan umum","#ffc20e"], price:["Biaya","#16181a"], registration:["Pendaftaran","#e8890c"], training:["Pelatihan","#1f9d61"], complaint:["Keluhan","#d64545"], other:["Lainnya","#9aa1a9"]};
+async function pDash(){
+  const since = new Date(Date.now() - S.days*864e5).toISOString();
+  const {data} = await sb.from("messages").select("created_at,intent,escalated,unanswered,content").eq("role","customer").gte("created_at", since).order("created_at",{ascending:false}).limit(1000);
+  const m = data || [], esc_ = m.filter(x => x.escalated).length, un = m.filter(x => x.unanswered);
+  const newC = S.cust.filter(c => c.first_contact >= since).length;
+  const day = t => new Date(t).toLocaleDateString("en-CA",{timeZone:"Asia/Jakarta"});
+  const pd = {}; for(let i=S.days-1;i>=0;i--) pd[day(Date.now()-i*864e5)] = 0;
+  const it = {}; m.forEach(x => { const d = day(x.created_at); if(d in pd) pd[d]++; const k = INT[x.intent] ? x.intent : "other"; it[k] = (it[k]||0)+1; });
+  const mx = Math.max(1, ...Object.values(pd)), keys = Object.keys(pd), tot = m.length || 1;
+  let acc = 0; const stops = Object.entries(it).map(([k,v]) => { const a = acc/tot*100; acc += v; return `${INT[k][1]} ${a}% ${acc/tot*100}%`; });
+  const hu = S.cust.filter(c => c.mode==="human");
+  $("#view").innerHTML = `
+  <div class="head"><div><h1>Dashboard Analitik</h1><p class="mut">${S.days} hari terakhir</p></div>
+    <select id="per" aria-label="Periode"><option value="7">7 hari</option><option value="30">30 hari</option></select></div>
+  <div class="banner">Ringkasan percakapan pelanggan dan penanganan INSANIAN BOT secara real-time. Kartu merah menunjukkan kasus yang menunggu tim.</div>
+  <div class="kpis">
+    <div class="kpi"><span>Total pesan pelanggan</span><i class="ik">${ic("chat")}</i><b>${m.length}</b><span>Pada periode ini</span></div>
+    <div class="kpi grn"><span>Pelanggan baru</span><i class="ik">${ic("cust")}</i><b>${newC}</b><span>Kontak pertama</span></div>
+    <button class="kpi red" id="kh"><span>Perlu human</span><i class="ik">${ic("warn")}</i><b>${hu.length}</b><span>Menunggu tim sekarang</span></button>
+    <div class="kpi org"><span>Tingkat eskalasi</span><i class="ik">${ic("pct")}</i><b>${m.length ? Math.round(esc_/m.length*100) : 0}%</b><span>${esc_} dari ${m.length} pesan</span></div>
+    <div class="kpi org"><span>Belum terjawab</span><i class="ik">${ic("q")}</i><b>${un.length}</b><span>Perlu masuk knowledge base</span></div>
+  </div>
+  <div class="g2">
+    <section class="card"><h3>Pesan per hari</h3><div class="bars">${keys.map(k => `<i style="height:${pd[k]/mx*100}%" title="${k}: ${pd[k]} pesan"></i>`).join("")}</div>
+      <div class="axis"><span>${keys[0]}</span><span>puncak ${mx}/hari</span><span>${keys[keys.length-1]}</span></div></section>
+    <section class="card"><h3>Topik pertanyaan</h3>
+      ${m.length ? `<div class="donut" style="background:conic-gradient(${stops.join(",")})"><div>${m.length}</div></div>
+      <div class="lg">${Object.entries(it).map(([k,v]) => `<span style="--c:${INT[k][1]}">${INT[k][0]}: ${v}</span>`).join("")}</div>` : '<p class="empty">Belum ada data.</p>'}</section>
+  </div>
+  <div class="g2" style="grid-template-columns:1fr 1fr">
+    <section class="card"><h3>Perlu tindakan</h3>${hu.map(c => `<div class="item"><div><b>${esc(c.name)}</b><small>${esc(c.handoff_reason || "Menunggu tim")}</small></div><button data-o="${c.id}">Buka</button></div>`).join("") || '<p class="empty">Tidak ada. Bot menangani semua percakapan.</p>'}</section>
+    <section class="card"><h3>Pertanyaan belum terjawab</h3>${un.slice(0,6).map(x => `<div class="q">${esc(x.content)}<small>${fmt(x.created_at)}</small></div>`).join("") || '<p class="empty">Semua pertanyaan tercakup.</p>'}</section>
+  </div>`;
+  $("#per").value = S.days; $("#per").onchange = e => { S.days = +e.target.value; pDash(); };
+  $("#kh").onclick = () => { S.cur = hu[0] || null; go("chat"); };
+  $("#view").querySelectorAll("[data-o]").forEach(b => b.onclick = () => { S.cur = S.cust.find(c => c.id===b.dataset.o); go("chat"); });
+}
+
+// ---------- conversations ----------
+function pChat(){
+  $("#view").innerHTML = '<div class="chatwrap" id="cw"><aside id="list"></aside><section id="pane"><p class="empty">Pilih percakapan di sebelah kiri.</p></section></div>';
+  drawList(); if(S.cur) openCustomer(S.cur.id);
+}
+function drawList(){
+  const l = $("#list"); if(!l) return;
+  const rows = [...S.cust].sort((a,b) => (b.mode==="human")-(a.mode==="human") || new Date(b.last_message_at)-new Date(a.last_message_at));
+  l.innerHTML = rows.map(c => `<button class="row ${S.cur?.id===c.id?"sel":""}" data-id="${c.id}"><span class="nm">${esc(c.name)}</span>${c.mode==="human"?'<span class="tag">Perlu human</span>':"<span></span>"}
+    <span class="sub">${esc(c.handoff_reason || c.interest || (c.username ? "@"+c.username : "Pelanggan Telegram"))}</span><span class="tm">${fmt(c.last_message_at)}</span></button>`).join("") || '<p class="empty">Belum ada pelanggan. Kirim pesan ke bot untuk mencoba.</p>';
+  l.onclick = e => { const r = e.target.closest(".row"); if(r) openCustomer(r.dataset.id); };
+}
+async function openCustomer(id){
+  const draft = S.cur?.id === id ? ($("#txt")?.value || "") : "";
+  S.cur = S.cust.find(c => c.id === id); const c = S.cur; if(!c || !$("#pane")) return;
+  const {data} = await sb.from("messages").select("*").eq("customer_id", id).order("created_at");
+  const who = {customer:"Pelanggan", bot:"INSANIAN BOT", staff:"Anda"};
+  $("#cw").classList.add("o"); drawList();
+  $("#pane").innerHTML = `<div class="ph"><button class="soft back" id="bk">Kembali</button><div><b>${esc(c.name)}</b><small>${esc([c.username && "@"+c.username, c.company, c.phone].filter(Boolean).join(", "))}</small></div>
+    ${c.mode==="human" ? '<button class="grn" id="rs">Selesai, kembalikan ke bot</button>' : '<span class="okc">Bot aktif</span>'}</div>
+    <div id="msgs">${(data||[]).map(m => `<div class="b ${m.role}"><small>${who[m.role]}, ${fmt(m.created_at)}</small>${esc(m.content)}</div>`).join("")}</div>
+    <div class="cmp"><textarea id="txt" placeholder="Tulis balasan untuk pelanggan">${esc(draft)}</textarea><button id="sd">Kirim</button></div>
+    <p class="hint" id="nt">Membalas akan menjeda bot untuk pelanggan ini. Bot aktif lagi saat Anda klik Selesai, atau setelah 24 jam.</p>`;
+  $("#msgs").scrollTop = $("#msgs").scrollHeight;
+  $("#bk").onclick = () => $("#cw").classList.remove("o");
+  $("#sd").onclick = async () => { const t = $("#txt").value.trim(); if(!t) return; $("#sd").disabled = true;
+    try{ await api({action:"reply", customer_id:id, text:t}); $("#txt").value = ""; await refresh(); }
+    catch(e){ $("#nt").textContent = "Gagal terkirim: " + e.message; } finally { if($("#sd")) $("#sd").disabled = false; } };
+  if($("#rs")) $("#rs").onclick = async () => { try{ await api({action:"resolve", customer_id:id}); await refresh(); } catch(e){ $("#nt").textContent = "Gagal: " + e.message; } };
+}
+
+// ---------- customers ----------
+function pCust(){
+  $("#view").innerHTML = `<div class="head"><div><h1>Data Customer</h1><p class="mut">${S.cust.length} pelanggan tercatat</p></div><input id="sq" placeholder="Cari nama, username, perusahaan" style="max-width:320px"></div>
+  <div class="card tw"><table><thead><tr><th>Nama</th><th>Username</th><th>Perusahaan</th><th>Minat</th><th>Kontak pertama</th><th>Pesan terakhir</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div>`;
+  const draw = () => { const q = $("#sq").value.toLowerCase();
+    $("#tb").innerHTML = S.cust.filter(c => [c.name,c.username,c.company].join(" ").toLowerCase().includes(q)).map(c => `<tr data-id="${c.id}"><td><b>${esc(c.name)}</b></td><td>${esc(c.username ? "@"+c.username : "-")}</td><td>${esc(c.company||"-")}</td><td>${esc(c.interest||"-")}</td><td>${fmt(c.first_contact)}</td><td>${fmt(c.last_message_at)}</td><td>${c.mode==="human" ? '<span class="tag">Perlu human</span>' : '<span class="okc">Bot aktif</span>'}</td></tr>`).join(""); };
+  $("#sq").oninput = draw; draw();
+  $("#tb").onclick = e => { const r = e.target.closest("tr"); if(r){ S.cur = S.cust.find(c => c.id===r.dataset.id); go("chat"); } };
+}
+
+// ---------- knowledge base ----------
+async function pKB(){
+  const {data} = await sb.from("knowledge").select("*").order("sort").order("title");
+  $("#view").innerHTML = `<div class="head"><div><h1>Knowledge Base</h1><p class="mut">Perubahan berlaku pada jawaban bot berikutnya. Nonaktifkan entri untuk menyembunyikannya dari bot.</p></div><button id="ad">Tambah entri</button></div>` +
+  (data||[]).map(k => `<article class="card kb" data-id="${k.id}"><input class="t" value="${esc(k.title)}" aria-label="Judul"><textarea class="c" aria-label="Isi">${esc(k.content)}</textarea>
+  <div class="act"><label><input type="checkbox" class="a" ${k.active?"checked":""}> Aktif</label><button class="sv">Simpan perubahan</button><button class="danger dl">Hapus</button></div></article>`).join("");
+  $("#ad").onclick = async () => { await sb.from("knowledge").insert({title:"Entri baru", content:"Tulis fakta di sini.", sort:100}); pKB(); };
+  $("#view").onclick = async e => { const b = e.target.closest("button"), a = e.target.closest(".kb"); if(!b || !a) return;
+    if(b.classList.contains("sv")){ const {error} = await sb.from("knowledge").update({title:a.querySelector(".t").value, content:a.querySelector(".c").value, active:a.querySelector(".a").checked, updated_at:new Date().toISOString()}).eq("id", a.dataset.id);
+      b.textContent = error ? "Gagal: "+error.message : "Tersimpan"; setTimeout(() => b.textContent = "Simpan perubahan", 1800); }
+    if(b.classList.contains("dl") && confirm("Hapus entri ini?")){ await sb.from("knowledge").delete().eq("id", a.dataset.id); pKB(); } };
+}
+
+// ---------- team (staff who can use the bot as an assistant and receive alerts) ----------
+async function pTeam(){
+  const {data} = await sb.from("staff_users").select("*").order("created_at");
+  $("#view").innerHTML = `<div class="head"><div><h1>Tim</h1><p class="mut">Anggota tim yang menerima notifikasi dan dapat bertanya ke bot di Telegram, misalnya "berapa interaksi hari ini?".</p></div></div>
+  <div class="card"><div class="frm"><input id="ti" inputmode="numeric" placeholder="ID Telegram (dari @userinfobot)"><input id="tn" placeholder="Nama"><button id="ta">Tambah anggota</button></div>
+  <div class="tw"><table><tbody>${(data||[]).map(s => `<tr data-id="${s.id}" style="cursor:default"><td><b>${esc(s.name)}</b></td><td>${s.telegram_id}</td><td>${s.active?'<span class="okc">Aktif</span>':"Nonaktif"}</td><td><button class="soft tg">${s.active?"Nonaktifkan":"Aktifkan"}</button> <button class="danger rm">Hapus</button></td></tr>`).join("") || '<tr><td class="empty">Belum ada anggota.</td></tr>'}</tbody></table></div></div>`;
+  $("#ta").onclick = async () => { const id = $("#ti").value.trim(), n = $("#tn").value.trim(); if(!/^\d+$/.test(id) || !n) return toast("Isi ID Telegram (angka) dan nama.");
+    const {error} = await sb.from("staff_users").insert({telegram_id:+id, name:n}); if(error) toast("Gagal: "+error.message); else pTeam(); };
+  $("#view").querySelectorAll("tr[data-id]").forEach(r => { const id = r.dataset.id, s = data.find(x => x.id===id);
+    r.querySelector(".tg").onclick = async () => { await sb.from("staff_users").update({active:!s.active}).eq("id", id); pTeam(); };
+    r.querySelector(".rm").onclick = async () => { if(confirm("Hapus anggota ini?")){ await sb.from("staff_users").delete().eq("id", id); pTeam(); } }; });
+}
+boot();
+</script>
+</body>
+</html>
